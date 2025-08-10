@@ -40,15 +40,35 @@
             class="block w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded placeholder:text-zinc-500"
           />
         </div>
+        <div class="mt-5">
+          <label class="block text-sm text-zinc-300 mb-1"
+            >Confirm Password</label
+          >
+          <input
+            v-model="password_confirmation"
+            type="password"
+            placeholder="Confirm Password"
+            class="block w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded placeholder:text-zinc-500"
+          />
+          <!-- <label v-if="pass_err" class="block text-sm text-red-400 mt-1"
+            >Password doesnot match</label
+          > -->
+        </div>
 
         <!-- sign up button -->
         <div class="">
-          <button
+          <Button
+            :disabled="loading"
             class="mt-4 bg-yellow-500 rounded-full w-full px-4 py-2 text-black text-sm font-bold cursor-pointer hover:bg-yellow-600"
-          >
+            ><Loader2 v-if="loading" class="w-4 h-4 mr-2 animate-spin" />
             Sign Up
-          </button>
-          <Toaster rich-colors theme="dark" />
+          </Button>
+          <Toaster
+            rich-colors
+            theme="dark"
+            position="top-center"
+            :expand="true"
+          />
         </div>
         <!-- /sign up button -->
       </form>
@@ -61,12 +81,18 @@
 </template>
 
 <script setup lang="ts">
+import { Loader2 } from "lucide-vue-next";
+// import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "vue-sonner";
 import "vue-sonner/style.css";
+
 const name = ref("");
 const email = ref("");
 const password = ref("");
+const password_confirmation = ref("");
+// const pass_err = ref(false);
+const loading = ref(false);
 // const openTo = ref(true);
 
 // function changeTo() {
@@ -81,8 +107,10 @@ const password = ref("");
 // }
 
 async function submit() {
-  // console.log("Email: ", email.value);
-  // console.log("Password: ", password.value);
+  loading.value = true;
+  console.log("Email: ", email.value == null);
+  console.log("Password: ", password.value);
+  //if (password.value !== password_confirmation.value) pass_err.value = true;
   try {
     const response = await $fetch("/api/user", {
       method: "POST",
@@ -90,6 +118,13 @@ async function submit() {
         name: name.value,
         email: email.value,
         password: password.value,
+      },
+    });
+
+    toast.success("Account registered successfully.", {
+      action: {
+        label: "X",
+        onClick: () => console.log("Undo"),
       },
     });
   } catch (error) {
@@ -100,6 +135,8 @@ async function submit() {
         onClick: () => console.log("Undo"),
       },
     });
+  } finally {
+    loading.value = false;
   }
 }
 </script>
