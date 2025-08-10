@@ -1,5 +1,6 @@
 import prisma from "~/lib/prisma";
 import bcrypt from "bcryptjs";
+import validator from "validator";
 // /api/user POST
 
 // Hashing passwords
@@ -17,6 +18,38 @@ import bcrypt from "bcryptjs";
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
+
+    if (body.name)
+      if (!validator.isEmail(body.email)) {
+        throw createError({
+          statusCode: 400,
+          message: "Invalid email, enter a valid email.",
+        });
+      }
+
+    if (validator.equals(body.password, body.password_confirmation)) {
+      throw createError({
+        statusCode: 400,
+        message: "Password must match.",
+      });
+    }
+
+    if (
+      validator.isStrongPassword(body.password, {
+        minLength: 8,
+        minLowercase: 0,
+        minUppercase: 0,
+        minNumbers: 0,
+        minSymbols: 0,
+      })
+    ) {
+      throw createError({
+        statusCode: 400,
+        message: "Password doesnot meet strength requirements.",
+      });
+    }
+
+    validator.isEmail(body.email);
 
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(body.password, salt);
