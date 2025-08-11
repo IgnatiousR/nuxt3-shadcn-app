@@ -111,6 +111,11 @@ async function submit() {
   console.log("Email: ", email.value == null);
   console.log("Password: ", password.value);
   //if (password.value !== password_confirmation.value) pass_err.value = true;
+  if (password.value !== password_confirmation.value) {
+    toast.error("Passwords must match.");
+    loading.value = false;
+    return;
+  }
   try {
     const response = await $fetch("/api/user", {
       method: "POST",
@@ -118,8 +123,11 @@ async function submit() {
         name: name.value,
         email: email.value,
         password: password.value,
+        password_confirmation: password_confirmation.value,
       },
     });
+
+    console.log("res:", response);
 
     toast.success("Account registered successfully.", {
       action: {
@@ -128,7 +136,7 @@ async function submit() {
       },
     });
   } catch (error) {
-    console.log(error.response?._data?.message);
+    console.log("Err:", error.response?._data?.message);
     toast.error(error.response?._data?.message, {
       action: {
         label: "X",
