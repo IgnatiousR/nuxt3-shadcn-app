@@ -18,38 +18,49 @@ import validator from "validator";
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
+    console.log("first", body);
 
-    if (body.name)
-      if (!validator.isEmail(body.email)) {
-        throw createError({
-          statusCode: 400,
-          message: "Invalid email, enter a valid email.",
-        });
-      }
-
-    if (validator.equals(body.password, body.password_confirmation)) {
+    // if (body.name)
+    if (body.password !== body.password_confirmation) {
+      console.log("Inside");
       throw createError({
-        statusCode: 400,
-        message: "Password must match.",
+        statusCode: 404,
+        message: "Err.",
+        fatal: true,
       });
+      // throw createError({
+      //   statusCode: 400,
+      //   message: "Invalid",
+      // });
     }
+    // if (!validator.isEmail(body.email)) {
+    //   throw createError({
+    //     statusCode: 400,
+    //     message: "Invalid email, enter a valid email.",
+    //   });
+    // }
 
-    if (
-      validator.isStrongPassword(body.password, {
-        minLength: 8,
-        minLowercase: 0,
-        minUppercase: 0,
-        minNumbers: 0,
-        minSymbols: 0,
-      })
-    ) {
-      throw createError({
-        statusCode: 400,
-        message: "Password doesnot meet strength requirements.",
-      });
-    }
+    // if (!validator.equals(body.password, body.password_confirmation)) {
+    //   throw createError({
+    //     statusCode: 400,
+    //     message: "Password must match.",
+    //   });
+    // }
 
-    validator.isEmail(body.email);
+    // if (
+    //   validator.isStrongPassword(body.password, {
+    //     minLength: 8,
+    //     minLowercase: 0,
+    //     minUppercase: 0,
+    //     minNumbers: 0,
+    //     minSymbols: 0,
+    //   })
+    // ) {
+    //   throw createError({
+    //     statusCode: 400,
+    //     message: "Password doesnot meet strength requirements.",
+    //   });
+    // }
 
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(body.password, salt);
@@ -62,9 +73,10 @@ export default defineEventHandler(async (event) => {
         salt: salt,
       },
     });
-    console.log(body);
+    console.log("Sec:", body);
     return { data: "success" };
   } catch (error) {
+    //console.log("er:", error);
     if (error.code === "P2002") {
       throw createError({
         statusCode: 409,
