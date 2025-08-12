@@ -63,15 +63,27 @@
             ><Loader2 v-if="loading" class="w-4 h-4 mr-2 animate-spin" />
             Sign Up
           </Button>
-          <Toaster
-            rich-colors
-            theme="dark"
-            position="top-center"
-            :expand="true"
-          />
         </div>
         <!-- /sign up button -->
       </form>
+      <Toaster rich-colors theme="dark" position="top-center" :expand="true" />
+      <Button
+        size="sm"
+        class="px-3"
+        @click="
+          () => {
+            toast('Event has been created', {
+              description: 'Sunday, December 03, 2023 at 9:00 AM',
+              action: {
+                label: 'Undo',
+                onClick: () => console.log('Undo'),
+              },
+            });
+          }
+        "
+      >
+        Toast
+      </Button>
     </div>
     <!-- /sidebar -->
     <!-- note introduction -->
@@ -110,41 +122,54 @@ async function submit() {
   loading.value = true;
   console.log("Email: ", email.value == null);
   console.log("Password: ", password.value);
+
+  // const id = toast.success("Account registered successfully.", {
+  //   action: {
+  //     label: "Undo",
+  //     onClick: () => toast.dismiss(id),
+  //   },
+  // });
+  toast.success("Account registered successfully.", {
+    action: {
+      label: "x",
+      onClick: () => toast.dismiss(), // closes latest toast
+    },
+  });
   //if (password.value !== password_confirmation.value) pass_err.value = true;
-  if (password.value !== password_confirmation.value) {
-    toast.error("Passwords must match.");
-    loading.value = false;
-    return;
-  }
-  try {
-    const response = await $fetch("/api/user", {
-      method: "POST",
-      body: {
-        name: name.value,
-        email: email.value,
-        password: password.value,
-        password_confirmation: password_confirmation.value,
-      },
-    });
+  // if (password.value !== password_confirmation.value) {
+  //   toast.error("Passwords must match.");
+  //   loading.value = false;
+  //   return;
+  // }
+  // try {
+  //   const response = await $fetch("/api/user", {
+  //     method: "POST",
+  //     body: {
+  //       name: name.value,
+  //       email: email.value,
+  //       password: password.value,
+  //       password_confirmation: password_confirmation.value,
+  //     },
+  //   });
 
-    console.log("res:", response);
+  //   console.log("res:", response);
 
-    toast.success("Account registered successfully.", {
-      action: {
-        label: "X",
-        onClick: () => console.log("Undo"),
-      },
-    });
-  } catch (error) {
-    console.log("Err:", error.response?._data?.message);
-    toast.error(error.response?._data?.message, {
-      action: {
-        label: "X",
-        onClick: () => console.log("Undo"),
-      },
-    });
-  } finally {
-    loading.value = false;
-  }
+  //   toast.success("Account registered successfully.", {
+  //     action: {
+  //       label: "X",
+  //       onClick: () => console.log("Undo"),
+  //     },
+  //   });
+  // } catch (error) {
+  //   console.log("Err:", error.response?._data?.message);
+  //   toast.error(error.response?._data?.message, {
+  //     action: {
+  //       label: "X",
+  //       onClick: () => console.log("Undo"),
+  //     },
+  //   });
+  // } finally {
+  //   loading.value = false;
+  // }
 }
 </script>
