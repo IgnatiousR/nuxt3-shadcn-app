@@ -98,6 +98,7 @@ const onSubmit = handleSubmit((values) => {
           </FormField>
           <Button type="submit"> Submit </Button>
           <Toaster
+            closeButton
             rich-colors
             theme="dark"
             position="top-center"
