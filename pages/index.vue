@@ -18,11 +18,16 @@ import { Input } from "@/components/ui/input";
 import { toast } from "vue-sonner";
 import { Toaster } from "@/components/ui/sonner";
 import "vue-sonner/style.css";
+import { Loader2 } from "lucide-vue-next";
+
+const loading = ref(false);
 
 const formSchema = toTypedSchema(
   z.object({
     username: z.string().min(2).max(50),
     email: z.string().email().min(2).max(50),
+    password: z.string().min(6),
+    password_confirmation: z.string().min(6),
   })
 );
 
@@ -31,12 +36,13 @@ const { handleSubmit } = useForm({
 });
 
 const onSubmit = handleSubmit((values) => {
+  loading.value = true;
   // toast("You submitted the following values:", {
   //   description: values,
-  //   action: {
-  //     label: "Undo",
-  //     onClick: () => console.log("Undo"),
-  //   },
+  //   // action: {
+  //   //   label: "Undo",
+  //   //   onClick: () => console.log("Undo"),
+  //   // },
   // });
   console.log(values);
   // toast({
@@ -47,6 +53,8 @@ const onSubmit = handleSubmit((values) => {
   //     h("code", { class: "text-white" }, JSON.stringify(values, null, 2))
   //   ),
   // });
+
+  loading.value = false;
 });
 </script>
 
@@ -65,7 +73,7 @@ const onSubmit = handleSubmit((values) => {
           to your account
         </p>
 
-        <form class="w-2/3 space-y-6" @submit="onSubmit">
+        <form class="space-y-6 mt-10" @submit="onSubmit">
           <FormField v-slot="{ componentField }" name="username">
             <FormItem v-auto-animate>
               <FormLabel>Username</FormLabel>
@@ -96,9 +104,49 @@ const onSubmit = handleSubmit((values) => {
               <FormMessage />
             </FormItem>
           </FormField>
-          <Button type="submit"> Submit </Button>
+          <FormField v-slot="{ componentField }" name="password">
+            <FormItem v-auto-animate>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input
+                  type="password"
+                  placeholder="********"
+                  v-bind="componentField"
+                />
+              </FormControl>
+              <FormDescription> </FormDescription>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField v-slot="{ componentField }" name="password_confirmation">
+            <FormItem v-auto-animate>
+              <FormLabel>Confirm Password</FormLabel>
+              <FormControl>
+                <Input
+                  type="password"
+                  placeholder="********"
+                  v-bind="componentField"
+                />
+              </FormControl>
+              <FormDescription> </FormDescription>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <!-- <Button type="submit"> Submit </Button> -->
+          <Button
+            :disabled="loading"
+            class="mt-4 bg-yellow-500 rounded-full w-full px-4 py-2 text-black text-sm font-bold cursor-pointer hover:bg-yellow-600"
+            ><Loader2 v-if="loading" class="w-4 h-4 mr-2 animate-spin" />
+            Sign Up
+          </Button>
+          <!-- <Toaster
+            close-button
+            rich-colors
+            theme="dark"
+            position="top-center"
+            :expand="true"
+          /> -->
           <Toaster
-            closeButton
             rich-colors
             theme="dark"
             position="top-center"
