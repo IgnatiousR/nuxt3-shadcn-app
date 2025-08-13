@@ -135,6 +135,7 @@ async function submit() {
       onClick: () => toast.dismiss(), // closes latest toast
     },
   });
+  loading.value = false;
   //if (password.value !== password_confirmation.value) pass_err.value = true;
   // if (password.value !== password_confirmation.value) {
   //   toast.error("Passwords must match.");
