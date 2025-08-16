@@ -1,176 +1,227 @@
-<template>
-  <div class="h-screen flex">
-    <!-- sidebar -->
-    <div class="bg-zinc-900 w-[518px] p-8 flex flex-col justify-center">
-      <h1 class="font-semibold text-xl text-white">
-        Notes<span class="text-yellow-500">App</span>
-      </h1>
-      <h1 class="font-bold text-lg mt-8">Sign up for a free account</h1>
-      <p class="text-sm">
-        Already registered?
-        <span class="font-bold text-yellow-500 underline mt-0.5">Log in</span>
-        to your account
-      </p>
-
-      <form @submit.prevent="submit">
-        <div class="mt-10">
-          <label class="block text-sm text-zinc-300 mb-1">Full Name</label>
-          <input
-            v-model="name"
-            type="text"
-            placeholder="Full name"
-            class="block w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded placeholder:text-zinc-500"
-          />
-        </div>
-        <div class="mt-5">
-          <label class="block text-sm text-zinc-300 mb-1">Email Address</label>
-          <input
-            v-model="email"
-            type="email"
-            placeholder="Email"
-            class="block w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded placeholder:text-zinc-500"
-          />
-        </div>
-        <div class="mt-5">
-          <label class="block text-sm text-zinc-300 mb-1">Password</label>
-          <input
-            v-model="password"
-            type="password"
-            placeholder="Password"
-            class="block w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded placeholder:text-zinc-500"
-          />
-        </div>
-        <div class="mt-5">
-          <label class="block text-sm text-zinc-300 mb-1"
-            >Confirm Password</label
-          >
-          <input
-            v-model="password_confirmation"
-            type="password"
-            placeholder="Confirm Password"
-            class="block w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded placeholder:text-zinc-500"
-          />
-          <!-- <label v-if="pass_err" class="block text-sm text-red-400 mt-1"
-            >Password doesnot match</label
-          > -->
-        </div>
-
-        <!-- sign up button -->
-        <div class="">
-          <Button
-            :disabled="loading"
-            class="mt-4 bg-yellow-500 rounded-full w-full px-4 py-2 text-black text-sm font-bold cursor-pointer hover:bg-yellow-600"
-            ><Loader2 v-if="loading" class="w-4 h-4 mr-2 animate-spin" />
-            Sign Up
-          </Button>
-        </div>
-        <!-- /sign up button -->
-      </form>
-      <Toaster rich-colors theme="dark" position="top-center" :expand="true" />
-      <Button
-        size="sm"
-        class="px-3"
-        @click="
-          () => {
-            toast('Event has been created', {
-              description: 'Sunday, December 03, 2023 at 9:00 AM',
-              action: {
-                label: 'Undo',
-                onClick: () => console.log('Undo'),
-              },
-            });
-          }
-        "
-      >
-        Toast
-      </Button>
-    </div>
-    <!-- /sidebar -->
-    <!-- note introduction -->
-    <div>Main</div>
-    <!-- /note introduction -->
-  </div>
-</template>
-
 <script setup lang="ts">
-import { Loader2 } from "lucide-vue-next";
-// import { Button } from "@/components/ui/button";
-import { Toaster } from "@/components/ui/sonner";
+import { vAutoAnimate } from "@formkit/auto-animate/vue";
+import { toTypedSchema } from "@vee-validate/zod";
+import { useForm } from "vee-validate";
+// import { h } from "vue";
+import * as z from "zod";
+
+import { Button } from "@/components/ui/button";
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { toast } from "vue-sonner";
+import { Toaster } from "@/components/ui/sonner";
 import "vue-sonner/style.css";
+import { Loader2, Pencil, MoveRight, Eye, EyeOff } from "lucide-vue-next";
 
-const name = ref("");
-const email = ref("");
-const password = ref("");
-const password_confirmation = ref("");
-// const pass_err = ref(false);
 const loading = ref(false);
-// const openTo = ref(true);
+const show_password = ref(false);
+const show_password_confirm = ref(false);
 
-// function changeTo() {
-//   toast.error("Event has been created", {
-//     description: "Sunday, December 03, 2023 at 9:00 AM",
-//     action: {
-//       label: "X",
-//       onClick: () => console.log("Undo"),
-//     },
-//   });
-//   // openTo.value = false;
-// }
+const formSchema = toTypedSchema(
+  z
+    .object({
+      username: z.string().min(2).max(50),
+      email: z.string().email().min(2).max(50),
+      password: z.string().min(6),
+      password_confirmation: z.string().min(6),
+    })
+    .refine((data) => data.password === data.password_confirmation, {
+      message: "Passwords don't match",
+      path: ["password_confirmation"],
+    })
+);
 
-async function submit() {
+const { handleSubmit } = useForm({
+  validationSchema: formSchema,
+});
+
+const onSubmit = handleSubmit(async (values) => {
   loading.value = true;
-  console.log("Email: ", email.value == null);
-  console.log("Password: ", password.value);
+  console.log(values.username);
+  toast.success("After 3 sec");
+  setTimeout(() => {
+    loading.value = false;
+    navigateTo("/");
+  }, 3000);
 
-  // const id = toast.success("Account registered successfully.", {
-  //   action: {
-  //     label: "Undo",
-  //     onClick: () => toast.dismiss(id),
-  //   },
+  // toast("You submitted the following values:", {
+  //   description: "" + values.username,
   // });
-  toast.success("Account registered successfully.", {
-    action: {
-      label: "x",
-      onClick: () => toast.dismiss(), // closes latest toast
-    },
-  });
-  loading.value = false;
-  //if (password.value !== password_confirmation.value) pass_err.value = true;
-  // if (password.value !== password_confirmation.value) {
-  //   toast.error("Passwords must match.");
-  //   loading.value = false;
-  //   return;
-  // }
+
   // try {
   //   const response = await $fetch("/api/user", {
   //     method: "POST",
   //     body: {
-  //       name: name.value,
-  //       email: email.value,
-  //       password: password.value,
-  //       password_confirmation: password_confirmation.value,
+  //       name: values.username,
+  //       email: values.email,
+  //       password: values.password,
+  //       password_confirmation: values.password_confirmation,
   //     },
   //   });
 
   //   console.log("res:", response);
 
-  //   toast.success("Account registered successfully.", {
-  //     action: {
-  //       label: "X",
-  //       onClick: () => console.log("Undo"),
-  //     },
-  //   });
+  //   toast.success("Account registered successfully.");
   // } catch (error) {
-  //   console.log("Err:", error.response?._data?.message);
-  //   toast.error(error.response?._data?.message, {
-  //     action: {
-  //       label: "X",
-  //       onClick: () => console.log("Undo"),
-  //     },
-  //   });
+  //   // console.log("Err:", error.response?._data?.message);
+  //   // toast.error(error.response?._data?.message);
+  //   if (error && typeof error === "object" && "response" in error) {
+  //     const err = error as { response?: { _data?: { message?: string } } };
+  //     console.log("Err:", err.response?._data?.message);
+  //     toast.error(err.response?._data?.message || "Something went wrong");
+  //   } else {
+  //     console.error("Unexpected error", error);
+  //     toast.error("Something went wrong");
+  //   }
   // } finally {
   //   loading.value = false;
   // }
-}
+});
 </script>
+
+<template>
+  <div>
+    <div class="h-screen flex">
+      <!-- sidebar -->
+      <div class="bg-zinc-900 w-[518px] p-8 flex flex-col justify-center">
+        <div class="flex items-center">
+          <Pencil class="w-6 h-6 mr-2 text-yellow-500" />
+          <h1 class="font-semibold text-xl text-white">
+            Notes<span class="text-yellow-500">App</span>
+          </h1>
+        </div>
+
+        <h1 class="font-bold text-lg mt-8">Sign up for a free account</h1>
+        <p class="text-sm">
+          Already registered?
+          <NuxtLink
+            to="/login"
+            class="font-bold text-yellow-500 underline mt-0.5"
+            >Log in</NuxtLink
+          >
+          to your account
+        </p>
+
+        <form class="space-y-5 mt-10" @submit="onSubmit">
+          <FormField v-slot="{ componentField }" name="username">
+            <FormItem v-auto-animate>
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <Input type="text" placeholder="Name" v-bind="componentField" />
+              </FormControl>
+              <FormDescription>
+                This is your public display name.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField v-slot="{ componentField }" name="email">
+            <FormItem v-auto-animate>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input
+                  type="email"
+                  placeholder="you@example.com"
+                  v-bind="componentField"
+                />
+              </FormControl>
+              <!-- <FormDescription> </FormDescription> -->
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField v-slot="{ componentField }" name="password">
+            <FormItem v-auto-animate>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <div class="relative w-full items-center">
+                  <Input
+                    :type="show_password ? 'text' : 'password'"
+                    :placeholder="show_password ? 'Password' : '********'"
+                    v-bind="componentField"
+                  />
+                  <div
+                    class="absolute end-0 inset-y-0 flex items-center justify-center px-2 mr-1 cursor-pointer"
+                    @click="show_password = !show_password"
+                  >
+                    <EyeOff
+                      v-if="!show_password"
+                      class="size-5 text-muted-foreground"
+                    />
+                    <Eye
+                      v-if="show_password"
+                      class="size-5 text-muted-foreground"
+                    />
+                  </div>
+                </div>
+              </FormControl>
+              <!-- <FormDescription> </FormDescription> -->
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField v-slot="{ componentField }" name="password_confirmation">
+            <FormItem v-auto-animate>
+              <FormLabel>Confirm Password</FormLabel>
+              <FormControl>
+                <div class="relative w-full items-center">
+                  <Input
+                    :type="show_password_confirm ? 'text' : 'password'"
+                    :placeholder="
+                      show_password_confirm
+                        ? 'Confirm Password'
+                        : '****************'
+                    "
+                    v-bind="componentField"
+                  />
+                  <div
+                    class="absolute end-0 inset-y-0 flex items-center justify-center px-2 mr-1 cursor-pointer"
+                    @click="show_password_confirm = !show_password_confirm"
+                  >
+                    <EyeOff
+                      v-if="!show_password_confirm"
+                      class="size-5 text-muted-foreground"
+                    />
+                    <Eye
+                      v-if="show_password_confirm"
+                      class="size-5 text-muted-foreground"
+                    />
+                  </div>
+                </div>
+              </FormControl>
+              <!-- <FormDescription> </FormDescription> -->
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <!-- <Button type="submit"> Submit </Button> -->
+          <Button
+            :disabled="loading"
+            class="mt-4 bg-yellow-500 rounded-full w-full px-4 py-2 text-black text-sm font-bold cursor-pointer hover:bg-yellow-600"
+            ><Loader2 v-if="loading" class="w-4 h-4 mr-2 animate-spin" /> Sign
+            Up <MoveRight class="w-5 h-5 mr-2" />
+          </Button>
+          <!-- <Toaster
+            close-button
+            rich-colors
+            theme="dark"
+            position="top-center"
+            :expand="true"
+          /> -->
+          <Toaster
+            rich-colors
+            theme="dark"
+            position="top-center"
+            :expand="true"
+          />
+        </form>
+      </div>
+
+      <div>Main</div>
+    </div>
+  </div>
+</template>
