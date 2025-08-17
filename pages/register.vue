@@ -44,45 +44,45 @@ const { handleSubmit } = useForm({
 
 const onSubmit = handleSubmit(async (values) => {
   loading.value = true;
-  console.log(values.username);
-  toast.success("After 3 sec");
-  setTimeout(() => {
-    loading.value = false;
-    navigateTo("/");
-  }, 3000);
+  // console.log(values.username);
+  // toast.success("After 3 sec");
+  // setTimeout(() => {
+  //   loading.value = false;
+  //   navigateTo("/");
+  // }, 3000);
 
   // toast("You submitted the following values:", {
   //   description: "" + values.username,
   // });
 
-  // try {
-  //   const response = await $fetch("/api/user", {
-  //     method: "POST",
-  //     body: {
-  //       name: values.username,
-  //       email: values.email,
-  //       password: values.password,
-  //       password_confirmation: values.password_confirmation,
-  //     },
-  //   });
+  try {
+    const response = await $fetch("/api/user", {
+      method: "POST",
+      body: {
+        name: values.username,
+        email: values.email,
+        password: values.password,
+        password_confirmation: values.password_confirmation,
+      },
+    });
 
-  //   console.log("res:", response);
+    console.log("res:", response);
 
-  //   toast.success("Account registered successfully.");
-  // } catch (error) {
-  //   // console.log("Err:", error.response?._data?.message);
-  //   // toast.error(error.response?._data?.message);
-  //   if (error && typeof error === "object" && "response" in error) {
-  //     const err = error as { response?: { _data?: { message?: string } } };
-  //     console.log("Err:", err.response?._data?.message);
-  //     toast.error(err.response?._data?.message || "Something went wrong");
-  //   } else {
-  //     console.error("Unexpected error", error);
-  //     toast.error("Something went wrong");
-  //   }
-  // } finally {
-  //   loading.value = false;
-  // }
+    toast.success("Account registered successfully.");
+  } catch (error) {
+    // console.log("Err:", error.response?._data?.message);
+    // toast.error(error.response?._data?.message);
+    if (error && typeof error === "object" && "response" in error) {
+      const err = error as { response?: { _data?: { message?: string } } };
+      console.log("Err:", err.response?._data?.message);
+      toast.error(err.response?._data?.message || "Something went wrong");
+    } else {
+      console.error("Unexpected error", error);
+      toast.error("Something went wrong");
+    }
+  } finally {
+    loading.value = false;
+  }
 });
 </script>
 
