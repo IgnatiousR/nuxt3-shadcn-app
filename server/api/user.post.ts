@@ -43,9 +43,9 @@ export default defineEventHandler(async (event) => {
     console.log("Token:", token);
     console.log("U:", newUser);
 
-    // setCookie(event, "NotesJWT", token, {
-    //   maxAge: 60 * 60 * 12, // seconds
-    // });
+    setCookie(event, "NotesJWT", token, {
+      maxAge: 60 * 60 * 12, // seconds
+    });
 
     //console.log("Sec:", body);
     return { data: "success" };
