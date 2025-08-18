@@ -3,6 +3,7 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineNuxtConfig({
   runtimeConfig: {
     databaseUrl: process.env.DATABASE_URL,
+    jwtSecret: process.env.JWT_SECRET,
   },
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
