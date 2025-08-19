@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import db from "~/src";
+// import db from "~/src";
+import { db } from "~/src/db/db";
 import type { SelectUser } from "~/src/db/schema";
 import { usersTable } from "~/src/db/schema";
 import { eq } from "drizzle-orm";
