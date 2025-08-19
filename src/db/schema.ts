@@ -13,6 +13,8 @@ export const usersTable = pgTable("users", {
 //   name: text('name').notNull(),
 //   age: integer('age').notNull(),
 //   email: text('email').notNull().unique(),
+//   password: text('password').notNull(),
+//   salt: text('password').notNull(),
 // });
 
 export type InsertUser = typeof usersTable.$inferInsert;
